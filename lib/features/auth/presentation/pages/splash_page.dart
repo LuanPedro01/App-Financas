@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
-import 'package:financeiro/features/auth/providers/auth_provider.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -48,7 +47,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.brand500.withOpacity(0.4),
+                    color: AppColors.brand500.withValues(alpha: 0.4),
                     blurRadius: 32,
                     offset: const Offset(0, 12),
                   ),

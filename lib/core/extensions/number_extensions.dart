@@ -46,16 +46,16 @@ extension IntExtensions on int {
   String get brl => toDouble().brl;
   String get brlCompact => toDouble().brlCompact;
   String get ordinal {
-    if (this >= 11 && this <= 13) return '${this}º';
+    if (this >= 11 && this <= 13) return '$thisº';
     switch (this % 10) {
       case 1:
-        return '${this}º';
+        return '$thisº';
       case 2:
-        return '${this}º';
+        return '$thisº';
       case 3:
-        return '${this}º';
+        return '$thisº';
       default:
-        return '${this}º';
+        return '$thisº';
     }
   }
 

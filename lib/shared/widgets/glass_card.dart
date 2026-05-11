@@ -52,14 +52,14 @@ class GlassCard extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppColors.white.withOpacity(opacity),
-                      AppColors.white.withOpacity(opacity * 0.5),
+                      AppColors.white.withValues(alpha: opacity),
+                      AppColors.white.withValues(alpha: opacity * 0.5),
                     ],
                   ),
               borderRadius: radius,
               border: border ??
                   Border.all(
-                    color: AppColors.white.withOpacity(0.12),
+                    color: AppColors.white.withValues(alpha: 0.12),
                     width: 1,
                   ),
               boxShadow: boxShadow,
@@ -115,7 +115,7 @@ class AppCard extends StatelessWidget {
         borderRadius: radius,
         border: border ??
             Border.all(
-              color: scheme.outlineVariant.withOpacity(0.5),
+              color: scheme.outlineVariant.withValues(alpha: 0.5),
               width: 1,
             ),
         boxShadow: boxShadow,

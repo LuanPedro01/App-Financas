@@ -27,7 +27,6 @@ class DashboardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accountsAsync = ref.watch(accountsProvider);
     final txState = ref.watch(transactionProvider);
 
     if (txState.isLoading && txState.transactions.isEmpty) {
@@ -130,7 +129,7 @@ class _DashboardAppBar extends ConsumerWidget {
 
     return SliverAppBar(
       floating: true,
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
       title: Column(
@@ -145,7 +144,7 @@ class _DashboardAppBar extends ConsumerWidget {
           Text(
             settings.userName,
             style: AppTypography.h5.copyWith(
-              color: scheme.onBackground,
+              color: scheme.onSurface,
             ),
           ),
         ],
@@ -189,10 +188,9 @@ class _BalanceCard extends ConsumerWidget {
     final totalBalance = ref.watch(totalBalanceProvider);
     final income = ref.watch(currentMonthIncomeProvider);
     final expense = ref.watch(currentMonthExpenseProvider);
-    final netFlow = income - expense;
     final now = DateTime.now();
 
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -205,7 +203,7 @@ class _BalanceCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brand500.withOpacity(0.3),
+            color: AppColors.brand500.withValues(alpha: 0.3),
             blurRadius: 32,
             offset: const Offset(0, 12),
           ),
@@ -232,7 +230,7 @@ class _BalanceCard extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -266,7 +264,7 @@ class _BalanceCard extends ConsumerWidget {
                 Container(
                   width: 1,
                   height: 40,
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                 ),
                 Expanded(
                   child: _MiniStat(
@@ -311,7 +309,7 @@ class _MiniStat extends ConsumerWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 16),
@@ -359,7 +357,7 @@ class _IncomeExpenseRow extends ConsumerWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.income.withOpacity(0.12),
+                    color: AppColors.income.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
@@ -403,7 +401,7 @@ class _IncomeExpenseRow extends ConsumerWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.expense.withOpacity(0.12),
+                    color: AppColors.expense.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
@@ -494,7 +492,7 @@ class _QuickActions extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.pageHPadding),
+            horizontal: AppSpacing.pageHPadding,),
         itemCount: _actions.length,
         separatorBuilder: (_, __) =>
             const SizedBox(width: AppSpacing.md),
@@ -534,10 +532,10 @@ class _QuickActionButton extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: action.color.withOpacity(0.12),
+              color: action.color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: action.color.withOpacity(0.2),
+                color: action.color.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -599,7 +597,7 @@ class _MonthlyChart extends ConsumerWidget {
               t.type == TransactionType.income &&
               t.date.month == m.month &&
               t.date.year == m.year &&
-              t.isCompleted)
+              t.isCompleted,)
           .fold(0.0, (s, t) => s + t.amount);
     }).toList();
 
@@ -609,7 +607,7 @@ class _MonthlyChart extends ConsumerWidget {
               t.type == TransactionType.expense &&
               t.date.month == m.month &&
               t.date.year == m.year &&
-              t.isCompleted)
+              t.isCompleted,)
           .fold(0.0, (s, t) => s + t.amount);
     }).toList();
 
@@ -627,7 +625,7 @@ class _MonthlyChart extends ConsumerWidget {
               Text(
                 'Fluxo mensal',
                 style: AppTypography.h6.copyWith(
-                  color: scheme.onBackground,
+                  color: scheme.onSurface,
                 ),
               ),
               GestureDetector(
@@ -643,10 +641,10 @@ class _MonthlyChart extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
           // Legend
-          Row(
+          const Row(
             children: [
               _ChartLegend(color: AppColors.income, label: 'Receitas'),
-              const SizedBox(width: AppSpacing.lg),
+              SizedBox(width: AppSpacing.lg),
               _ChartLegend(color: AppColors.expense, label: 'Despesas'),
             ],
           ),
@@ -703,7 +701,7 @@ class _MonthlyChart extends ConsumerWidget {
                   show: true,
                   horizontalInterval: yInterval,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: scheme.outlineVariant.withOpacity(0.3),
+                    color: scheme.outlineVariant.withValues(alpha: 0.3),
                     strokeWidth: 1,
                     dashArray: [4, 4],
                   ),
@@ -798,7 +796,7 @@ class _GoalsSection extends ConsumerWidget {
               Text(
                 'Metas ativas',
                 style: AppTypography.h6.copyWith(
-                  color: scheme.onBackground,
+                  color: scheme.onSurface,
                 ),
               ),
               GestureDetector(
@@ -819,7 +817,7 @@ class _GoalsSection extends ConsumerWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.pageHPadding),
+                horizontal: AppSpacing.pageHPadding,),
             itemCount: goals.length.clamp(0, 5),
             separatorBuilder: (_, __) =>
                 const SizedBox(width: AppSpacing.md),
@@ -841,18 +839,18 @@ class _GoalsSection extends ConsumerWidget {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.15),
+                            color: color.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(Icons.flag_rounded,
-                              color: color, size: 16),
+                              color: color, size: 16,),
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
                             goal.name,
                             style: AppTypography.labelMedium.copyWith(
-                              color: scheme.onBackground,
+                              color: scheme.onSurface,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -879,7 +877,7 @@ class _GoalsSection extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: color.withOpacity(0.15),
+                        backgroundColor: color.withValues(alpha: 0.15),
                         valueColor: AlwaysStoppedAnimation(color),
                         minHeight: 6,
                       ),
@@ -922,7 +920,7 @@ class _RecentTransactions extends ConsumerWidget {
               Text(
                 'Últimas transações',
                 style: AppTypography.h6.copyWith(
-                  color: scheme.onBackground,
+                  color: scheme.onSurface,
                 ),
               ),
               GestureDetector(

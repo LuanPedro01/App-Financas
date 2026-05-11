@@ -1,10 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
-import 'package:financeiro/core/errors/failures.dart';
-import 'package:dartz/dartz.dart';
-
-enum BiometricType { fingerprint, face, iris, none }
 
 class LocalAuthService {
   LocalAuthService() : _auth = LocalAuthentication();
@@ -15,36 +11,16 @@ class LocalAuthService {
 
   Future<bool> get canCheckBiometrics => _auth.canCheckBiometrics;
 
-  Future<List<BiometricType>> getAvailableBiometrics() async {
-    try {
-      final available = await _auth.getAvailableBiometrics();
-      return available.map((b) {
-        return switch (b) {
-          BiometricType.fingerprint => BiometricType.fingerprint,
-          BiometricType.face => BiometricType.face,
-          BiometricType.iris => BiometricType.iris,
-          _ => BiometricType.none,
-        };
-      }).toList();
-    } catch (_) {
-      return [BiometricType.none];
-    }
-  }
-
-  Future<Either<Failure, bool>> authenticate({
+  Future<bool> authenticate({
     String reason = 'Confirme sua identidade para continuar',
     bool biometricOnly = false,
   }) async {
-    try {
-      final canAuth =
-          await _auth.canCheckBiometrics || await _auth.isDeviceSupported;
-      if (!canAuth) {
-        return const Left(
-          BiometricFailure(message: 'Biometria não disponível neste dispositivo'),
-        );
-      }
+    final canBiometrics = await _auth.canCheckBiometrics;
+    final isSupported = await _auth.isDeviceSupported();
+    if (!canBiometrics && !isSupported) return false;
 
-      final result = await _auth.authenticate(
+    try {
+      return await _auth.authenticate(
         localizedReason: reason,
         options: AuthenticationOptions(
           stickyAuth: true,
@@ -53,23 +29,13 @@ class LocalAuthService {
           useErrorDialogs: true,
         ),
       );
-
-      return Right(result);
     } on PlatformException catch (e) {
-      final message = switch (e.code) {
-        auth_error.notAvailable => 'Biometria não disponível',
-        auth_error.notEnrolled => 'Nenhuma biometria cadastrada',
-        auth_error.lockedOut =>
-          'Biometria bloqueada. Tente novamente mais tarde',
-        auth_error.permanentlyLockedOut =>
-          'Biometria permanentemente bloqueada',
-        auth_error.passcodeNotSet =>
-          'Nenhum método de desbloqueio configurado',
-        _ => e.message ?? 'Erro de autenticação',
-      };
-      return Left(BiometricFailure(message: message, code: e.code));
-    } catch (e) {
-      return Left(BiometricFailure(message: e.toString()));
+      final blocked = [
+        auth_error.lockedOut,
+        auth_error.permanentlyLockedOut,
+      ];
+      if (blocked.contains(e.code)) rethrow;
+      return false;
     }
   }
 

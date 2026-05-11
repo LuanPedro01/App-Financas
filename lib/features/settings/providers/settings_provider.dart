@@ -1,26 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:financeiro/core/constants/app_constants.dart';
 import 'package:financeiro/core/services/storage_service.dart';
 import 'package:financeiro/core/theme/app_theme.dart';
 
-part 'settings_provider.freezed.dart';
+class AppSettings {
+  const AppSettings({
+    this.themeMode = AppThemeMode.dark,
+    this.currency = 'BRL',
+    this.locale = 'pt_BR',
+    this.hideBalance = false,
+    this.hapticEnabled = true,
+    this.notificationsEnabled = true,
+    this.autoLock = false,
+    this.autoLockTimeout = 5,
+    this.userName = 'Usuário',
+    this.userAvatar,
+  });
 
-@freezed
-class AppSettings with _$AppSettings {
-  const factory AppSettings({
-    @Default(AppThemeMode.dark) AppThemeMode themeMode,
-    @Default('BRL') String currency,
-    @Default('pt_BR') String locale,
-    @Default(false) bool hideBalance,
-    @Default(true) bool hapticEnabled,
-    @Default(true) bool notificationsEnabled,
-    @Default(false) bool autoLock,
-    @Default(5) int autoLockTimeout,
-    @Default('Usuário') String userName,
+  final AppThemeMode themeMode;
+  final String currency;
+  final String locale;
+  final bool hideBalance;
+  final bool hapticEnabled;
+  final bool notificationsEnabled;
+  final bool autoLock;
+  final int autoLockTimeout;
+  final String userName;
+  final String? userAvatar;
+
+  AppSettings copyWith({
+    AppThemeMode? themeMode,
+    String? currency,
+    String? locale,
+    bool? hideBalance,
+    bool? hapticEnabled,
+    bool? notificationsEnabled,
+    bool? autoLock,
+    int? autoLockTimeout,
+    String? userName,
     String? userAvatar,
-  }) = _AppSettings;
+  }) =>
+      AppSettings(
+        themeMode: themeMode ?? this.themeMode,
+        currency: currency ?? this.currency,
+        locale: locale ?? this.locale,
+        hideBalance: hideBalance ?? this.hideBalance,
+        hapticEnabled: hapticEnabled ?? this.hapticEnabled,
+        notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+        autoLock: autoLock ?? this.autoLock,
+        autoLockTimeout: autoLockTimeout ?? this.autoLockTimeout,
+        userName: userName ?? this.userName,
+        userAvatar: userAvatar ?? this.userAvatar,
+      );
 }
 
 class SettingsNotifier extends StateNotifier<AppSettings> {
@@ -72,7 +104,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   Future<void> setNotificationsEnabled(bool value) async {
     await StorageService.setBool(
-        AppConstants.keyNotificationsEnabled, value: value);
+        AppConstants.keyNotificationsEnabled, value: value,);
     state = state.copyWith(notificationsEnabled: value);
   }
 
@@ -90,9 +122,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = state.copyWith(userName: name);
   }
 
-  void toggleHideBalance() {
-    setHideBalance(!state.hideBalance);
-  }
+  void toggleHideBalance() => setHideBalance(!state.hideBalance);
 }
 
 final settingsProvider =
@@ -109,7 +139,8 @@ final themeModeProvider = Provider<ThemeMode>((ref) {
   };
 });
 
-final appThemeDataProvider = Provider<({ThemeData light, ThemeData dark})>((ref) {
+final appThemeDataProvider =
+    Provider<({ThemeData light, ThemeData dark})>((ref) {
   final mode = ref.watch(settingsProvider).themeMode;
   return (
     light: AppTheme.light,

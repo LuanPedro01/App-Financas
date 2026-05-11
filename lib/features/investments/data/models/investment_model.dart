@@ -1,7 +1,3 @@
-import 'package:isar/isar.dart';
-
-part 'investment_model.g.dart';
-
 enum InvestmentType {
   stock,
   fii,
@@ -24,10 +20,9 @@ enum InvestmentType {
       };
 }
 
-@collection
 class InvestmentModel {
   InvestmentModel({
-    required this.id,
+    this.id = 0,
     required this.name,
     required this.ticker,
     required this.type,
@@ -40,13 +35,10 @@ class InvestmentModel {
     this.updatedAt,
   });
 
-  Id id;
+  int id;
   String name;
   String ticker;
-
-  @enumerated
   InvestmentType type;
-
   double quantity;
   double avgPrice;
   double currentPrice;
@@ -60,4 +52,41 @@ class InvestmentModel {
   double get profitLoss => currentValue - totalInvested;
   double get profitLossPercent =>
       totalInvested > 0 ? profitLoss / totalInvested : 0.0;
+
+  Map<String, dynamic> toMap() {
+    final map = <String, dynamic>{
+      'name': name,
+      'ticker': ticker,
+      'type': type.name,
+      'quantity': quantity,
+      'avgPrice': avgPrice,
+      'currentPrice': currentPrice,
+      'dividendsReceived': dividendsReceived,
+      'notes': notes,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
+    if (id != 0) map['id'] = id;
+    return map;
+  }
+
+  factory InvestmentModel.fromMap(Map<String, dynamic> m) => InvestmentModel(
+        id: m['id'] as int,
+        name: m['name'] as String,
+        ticker: m['ticker'] as String,
+        type: InvestmentType.values.firstWhere(
+          (e) => e.name == m['type'],
+          orElse: () => InvestmentType.other,
+        ),
+        quantity: (m['quantity'] as num).toDouble(),
+        avgPrice: (m['avgPrice'] as num).toDouble(),
+        currentPrice: (m['currentPrice'] as num).toDouble(),
+        dividendsReceived:
+            (m['dividendsReceived'] as num? ?? 0).toDouble(),
+        notes: m['notes'] as String?,
+        createdAt: DateTime.parse(m['createdAt'] as String),
+        updatedAt: m['updatedAt'] != null
+            ? DateTime.tryParse(m['updatedAt'] as String)
+            : null,
+      );
 }

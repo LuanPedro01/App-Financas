@@ -1,16 +1,35 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:isar/isar.dart';
 import 'package:financeiro/core/services/database_service.dart';
 import 'package:financeiro/features/transactions/data/models/transaction_model.dart';
 import 'package:financeiro/features/transactions/domain/entities/transaction.dart';
 import 'package:financeiro/features/transactions/domain/enums/transaction_enums.dart';
 
-part 'transaction_provider.freezed.dart';
+class TransactionFilter {
+  const TransactionFilter({
+    this.startDate,
+    this.endDate,
+    this.type,
+    this.categoryId,
+    this.accountId,
+    this.cardId,
+    this.searchQuery,
+    this.tags = const [],
+    this.status,
+    this.sortBy = 'date_desc',
+  });
 
-@freezed
-class TransactionFilter with _$TransactionFilter {
-  const factory TransactionFilter({
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final TransactionType? type;
+  final String? categoryId;
+  final String? accountId;
+  final String? cardId;
+  final String? searchQuery;
+  final List<String> tags;
+  final TransactionStatus? status;
+  final String sortBy;
+
+  TransactionFilter copyWith({
     DateTime? startDate,
     DateTime? endDate,
     TransactionType? type,
@@ -18,22 +37,61 @@ class TransactionFilter with _$TransactionFilter {
     String? accountId,
     String? cardId,
     String? searchQuery,
-    @Default([]) List<String> tags,
+    List<String>? tags,
     TransactionStatus? status,
-    @Default('date_desc') String sortBy,
-  }) = _TransactionFilter;
+    String? sortBy,
+  }) =>
+      TransactionFilter(
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        type: type ?? this.type,
+        categoryId: categoryId ?? this.categoryId,
+        accountId: accountId ?? this.accountId,
+        cardId: cardId ?? this.cardId,
+        searchQuery: searchQuery ?? this.searchQuery,
+        tags: tags ?? this.tags,
+        status: status ?? this.status,
+        sortBy: sortBy ?? this.sortBy,
+      );
 }
 
-@freezed
-class TransactionState with _$TransactionState {
-  const factory TransactionState({
-    @Default([]) List<Transaction> transactions,
-    @Default([]) List<Transaction> filteredTransactions,
-    @Default(false) bool isLoading,
-    @Default(TransactionFilter()) TransactionFilter filter,
+class TransactionState {
+  const TransactionState({
+    this.transactions = const [],
+    this.filteredTransactions = const [],
+    this.isLoading = false,
+    this.filter = const TransactionFilter(),
+    this.error,
+    this.undoTransaction,
+  });
+
+  final List<Transaction> transactions;
+  final List<Transaction> filteredTransactions;
+  final bool isLoading;
+  final TransactionFilter filter;
+  final String? error;
+  final Transaction? undoTransaction;
+
+  TransactionState copyWith({
+    List<Transaction>? transactions,
+    List<Transaction>? filteredTransactions,
+    bool? isLoading,
+    TransactionFilter? filter,
     String? error,
     Transaction? undoTransaction,
-  }) = _TransactionState;
+    bool clearError = false,
+    bool clearUndo = false,
+  }) =>
+      TransactionState(
+        transactions: transactions ?? this.transactions,
+        filteredTransactions:
+            filteredTransactions ?? this.filteredTransactions,
+        isLoading: isLoading ?? this.isLoading,
+        filter: filter ?? this.filter,
+        error: clearError ? null : (error ?? this.error),
+        undoTransaction:
+            clearUndo ? null : (undoTransaction ?? this.undoTransaction),
+      );
 }
 
 class TransactionNotifier extends StateNotifier<TransactionState> {
@@ -41,15 +99,10 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     loadAll();
   }
 
-  Isar get _db => DatabaseService.instance;
-
   Future<void> loadAll() async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final models = await _db.transactionModels
-          .where()
-          .sortByDateDesc()
-          .findAll();
+      final models = await DatabaseService.getTransactions();
       final transactions = models.map(Transaction.fromModel).toList();
       state = state.copyWith(
         transactions: transactions,
@@ -65,20 +118,18 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   }
 
   Future<void> add(TransactionModel model) async {
-    await _db.writeTxn(() => _db.transactionModels.put(model));
+    await DatabaseService.insertTransaction(model);
     await loadAll();
   }
 
   Future<void> update(TransactionModel model) async {
-    await _db.writeTxn(() => _db.transactionModels.put(model));
+    await DatabaseService.updateTransaction(model);
     await loadAll();
   }
 
   Future<void> delete(int id) async {
-    final model = await _db.transactionModels.get(id);
-    if (model == null) return;
-    final tx = Transaction.fromModel(model);
-    await _db.writeTxn(() => _db.transactionModels.delete(id));
+    final tx = state.transactions.where((t) => t.id == id).firstOrNull;
+    await DatabaseService.deleteTransaction(id);
     state = state.copyWith(undoTransaction: tx);
     await loadAll();
   }
@@ -87,8 +138,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     final tx = state.undoTransaction;
     if (tx == null) return;
     final model = _toModel(tx);
-    await _db.writeTxn(() => _db.transactionModels.put(model));
-    state = state.copyWith(undoTransaction: null);
+    await DatabaseService.insertTransaction(model);
+    state = state.copyWith(clearUndo: true);
     await loadAll();
   }
 
@@ -108,61 +159,51 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
   }
 
   List<Transaction> _applyFilter(
-    List<Transaction> txs,
-    TransactionFilter f,
-  ) {
+      List<Transaction> txs, TransactionFilter f,) {
     var result = txs.toList();
 
     if (f.startDate != null) {
       result = result
           .where((t) =>
-              t.date.isAfter(f.startDate!.subtract(const Duration(seconds: 1))))
+              t.date.isAfter(f.startDate!.subtract(const Duration(seconds: 1)),),)
           .toList();
     }
-
     if (f.endDate != null) {
       result = result
           .where((t) =>
-              t.date.isBefore(f.endDate!.add(const Duration(seconds: 1))))
+              t.date.isBefore(f.endDate!.add(const Duration(seconds: 1)),),)
           .toList();
     }
-
     if (f.type != null) {
       result = result.where((t) => t.type == f.type).toList();
     }
-
     if (f.categoryId != null) {
       result = result.where((t) => t.categoryId == f.categoryId).toList();
     }
-
     if (f.accountId != null) {
       result = result
           .where((t) =>
-              t.accountId == f.accountId || t.toAccountId == f.accountId)
+              t.accountId == f.accountId || t.toAccountId == f.accountId,)
           .toList();
     }
-
     if (f.cardId != null) {
       result = result.where((t) => t.cardId == f.cardId).toList();
     }
-
     if (f.status != null) {
       result = result.where((t) => t.status == f.status).toList();
     }
-
     if (f.tags.isNotEmpty) {
       result = result
           .where((t) => f.tags.any((tag) => t.tags.contains(tag)))
           .toList();
     }
-
     if (f.searchQuery != null && f.searchQuery!.isNotEmpty) {
       final q = f.searchQuery!.toLowerCase();
       result = result
           .where((t) =>
               t.title.toLowerCase().contains(q) ||
               (t.categoryName?.toLowerCase().contains(q) ?? false) ||
-              (t.notes?.toLowerCase().contains(q) ?? false))
+              (t.notes?.toLowerCase().contains(q) ?? false),)
           .toList();
     }
 
@@ -200,8 +241,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         toAccountName: t.toAccountName,
         cardId: t.cardId,
         cardName: t.cardName,
-        tags: t.tags,
-        attachments: t.attachments,
+        tags: t.tags.toList(),
+        attachments: t.attachments.toList(),
         status: t.status,
         paymentMethod: t.paymentMethod,
         recurrenceType: t.recurrenceType,
@@ -223,7 +264,6 @@ final transactionProvider =
   return TransactionNotifier();
 });
 
-// ─── Derived providers ────────────────────────────────────────────────────────
 final currentMonthTransactionsProvider = Provider<List<Transaction>>((ref) {
   final txs = ref.watch(transactionProvider).transactions;
   final now = DateTime.now();

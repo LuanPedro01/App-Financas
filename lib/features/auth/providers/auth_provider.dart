@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:financeiro/core/constants/app_constants.dart';
 import 'package:financeiro/core/services/storage_service.dart';
 import 'package:financeiro/core/services/local_auth_service.dart';
-
-part 'auth_provider.freezed.dart';
 
 enum AuthStatus {
   initial,
@@ -15,16 +12,40 @@ enum AuthStatus {
   unauthenticated,
 }
 
-@freezed
-class AuthState with _$AuthState {
-  const factory AuthState({
-    @Default(AuthStatus.initial) AuthStatus status,
-    @Default(false) bool biometricEnabled,
-    @Default(false) bool pinEnabled,
-    @Default(false) bool isLoading,
-    @Default(0) int failedAttempts,
+class AuthState {
+  const AuthState({
+    this.status = AuthStatus.initial,
+    this.biometricEnabled = false,
+    this.pinEnabled = false,
+    this.isLoading = false,
+    this.failedAttempts = 0,
+    this.error,
+  });
+
+  final AuthStatus status;
+  final bool biometricEnabled;
+  final bool pinEnabled;
+  final bool isLoading;
+  final int failedAttempts;
+  final String? error;
+
+  AuthState copyWith({
+    AuthStatus? status,
+    bool? biometricEnabled,
+    bool? pinEnabled,
+    bool? isLoading,
+    int? failedAttempts,
     String? error,
-  }) = _AuthState;
+    bool clearError = false,
+  }) =>
+      AuthState(
+        status: status ?? this.status,
+        biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+        pinEnabled: pinEnabled ?? this.pinEnabled,
+        isLoading: isLoading ?? this.isLoading,
+        failedAttempts: failedAttempts ?? this.failedAttempts,
+        error: clearError ? null : (error ?? this.error),
+      );
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -55,7 +76,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
 
     if (pinEnabled || biometricEnabled) {
-      final lastLockStr = StorageService.getString(AppConstants.keyLastLockTime);
+      final lastLockStr =
+          StorageService.getString(AppConstants.keyLastLockTime);
       final shouldLock = _shouldAutoLock(lastLockStr, autoLock);
 
       if (shouldLock) {
@@ -66,9 +88,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           isLoading: false,
         );
 
-        if (biometricEnabled) {
-          await authenticateWithBiometrics();
-        }
+        if (biometricEnabled) await authenticateWithBiometrics();
         return;
       }
     }
@@ -84,10 +104,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   bool _shouldAutoLock(String? lastLockStr, bool autoLock) {
     if (!autoLock) return false;
     if (lastLockStr == null) return false;
-
     final lastLock = DateTime.tryParse(lastLockStr);
     if (lastLock == null) return true;
-
     final timeout = StorageService.getInt(AppConstants.keyAutoLockTimeout) ??
         AppConstants.defaultAutoLockTimeoutMinutes;
     return DateTime.now().difference(lastLock).inMinutes >= timeout;
@@ -115,7 +133,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         status: AuthStatus.authenticated,
         failedAttempts: 0,
-        error: null,
+        clearError: true,
       );
     } else {
       final attempts = state.failedAttempts + 1;
@@ -130,21 +148,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> authenticateWithBiometrics() async {
-    final result = await _authService.authenticate(
-      reason: 'Use sua biometria para acessar o Financeiro',
-    );
-
-    result.fold(
-      (failure) => state = state.copyWith(error: failure.message),
-      (success) {
-        if (success) {
-          state = state.copyWith(
-            status: AuthStatus.authenticated,
-            error: null,
-          );
-        }
-      },
-    );
+    try {
+      final success = await _authService.authenticate(
+        reason: 'Use sua biometria para acessar o App Finanças',
+      );
+      if (success) {
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          clearError: true,
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+    }
   }
 
   Future<void> enableBiometric(bool value) async {
@@ -159,12 +175,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   void lock() {
-    final now = DateTime.now().toIso8601String();
-    StorageService.setString(AppConstants.keyLastLockTime, now);
+    StorageService.setString(
+        AppConstants.keyLastLockTime, DateTime.now().toIso8601String(),);
     state = state.copyWith(status: AuthStatus.locked);
   }
 
-  void clearError() => state = state.copyWith(error: null);
+  void clearError() => state = state.copyWith(clearError: true);
 }
 
 final localAuthServiceProvider = Provider<LocalAuthService>(

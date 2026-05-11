@@ -1,6 +1,6 @@
 abstract final class AppConstants {
   // ─── App Info ─────────────────────────────────────────────────────────────
-  static const String appName = 'Financeiro';
+  static const String appName = 'App Finanças';
   static const String appVersion = '1.0.0';
   static const String appPackage = 'com.financeiro.app';
 

@@ -49,17 +49,15 @@ abstract final class AppTheme {
       error: AppColors.error500,
       onError: AppColors.white,
       errorContainer: const Color(0xFF4A0000),
-      onErrorContainer: AppColors.error100,
-      background: background,
-      onBackground: onBackground,
+      onErrorContainer: AppColors.error50,
       surface: surface,
       onSurface: onBackground,
-      surfaceVariant: surfaceVariant,
+      surfaceContainerHighest: surfaceVariant,
       onSurfaceVariant: AppColors.dark200,
       outline: AppColors.dark500,
       outlineVariant: AppColors.dark600,
       shadow: AppColors.black,
-      scrim: AppColors.black.withOpacity(0.8),
+      scrim: AppColors.black.withValues(alpha: 0.8),
       inverseSurface: AppColors.dark50,
       onInverseSurface: AppColors.dark800,
       inversePrimary: AppColors.brand600,
@@ -85,16 +83,14 @@ abstract final class AppTheme {
       onError: AppColors.white,
       errorContainer: AppColors.error50,
       onErrorContainer: AppColors.error600,
-      background: AppColors.light900,
-      onBackground: const Color(0xFF111318),
       surface: AppColors.white,
       onSurface: const Color(0xFF111318),
-      surfaceVariant: AppColors.light800,
+      surfaceContainerHighest: AppColors.light800,
       onSurfaceVariant: const Color(0xFF4A5267),
       outline: AppColors.light500,
       outlineVariant: AppColors.light600,
       shadow: AppColors.black,
-      scrim: AppColors.black.withOpacity(0.6),
+      scrim: AppColors.black.withValues(alpha: 0.6),
       inverseSurface: AppColors.dark750,
       onInverseSurface: AppColors.dark50,
       inversePrimary: AppColors.brand400,
@@ -111,8 +107,8 @@ abstract final class AppTheme {
   }) {
     final isDark = brightness == Brightness.dark;
     final textTheme = AppTypography.textTheme.apply(
-      bodyColor: colorScheme.onBackground,
-      displayColor: colorScheme.onBackground,
+      bodyColor: colorScheme.onSurface,
+      displayColor: colorScheme.onSurface,
     );
 
     SystemChrome.setSystemUIOverlayStyle(
@@ -120,7 +116,7 @@ abstract final class AppTheme {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness:
             isDark ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: colorScheme.background,
+        systemNavigationBarColor: colorScheme.surface,
         systemNavigationBarIconBrightness:
             isDark ? Brightness.light : Brightness.dark,
       ),
@@ -134,22 +130,22 @@ abstract final class AppTheme {
       textTheme: textTheme,
 
       // ─── Scaffold ─────────────────────────────────────────────────────
-      scaffoldBackgroundColor: colorScheme.background,
+      scaffoldBackgroundColor: colorScheme.surface,
 
       // ─── AppBar ───────────────────────────────────────────────────────
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
-        foregroundColor: colorScheme.onBackground,
+        foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: textTheme.titleLarge?.copyWith(
-          color: colorScheme.onBackground,
+          color: colorScheme.onSurface,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
         ),
         iconTheme: IconThemeData(
-          color: colorScheme.onBackground,
+          color: colorScheme.onSurface,
           size: AppSpacing.iconSize,
         ),
         systemOverlayStyle: SystemUiOverlayStyle(
@@ -160,7 +156,7 @@ abstract final class AppTheme {
       ),
 
       // ─── Card ─────────────────────────────────────────────────────────
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: colorScheme.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -236,7 +232,7 @@ abstract final class AppTheme {
       // ─── Input Decoration ─────────────────────────────────────────────
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: colorScheme.surfaceVariant,
+        fillColor: colorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
           borderSide: BorderSide.none,
@@ -280,8 +276,8 @@ abstract final class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colorScheme.surface,
         indicatorColor: colorScheme.primaryContainer,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return textTheme.labelSmall?.copyWith(
               color: colorScheme.primary,
               fontWeight: FontWeight.w700,
@@ -291,8 +287,8 @@ abstract final class AppTheme {
             color: colorScheme.onSurfaceVariant,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return IconThemeData(color: colorScheme.primary, size: 24);
           }
           return IconThemeData(color: colorScheme.onSurfaceVariant, size: 24);
@@ -303,7 +299,7 @@ abstract final class AppTheme {
 
       // ─── Chip ─────────────────────────────────────────────────────────
       chipTheme: ChipThemeData(
-        backgroundColor: colorScheme.surfaceVariant,
+        backgroundColor: colorScheme.surfaceContainerHighest,
         selectedColor: colorScheme.primaryContainer,
         labelStyle: textTheme.labelSmall,
         side: BorderSide.none,
@@ -317,7 +313,7 @@ abstract final class AppTheme {
       ),
 
       // ─── Dialog ───────────────────────────────────────────────────────
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: colorScheme.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -353,26 +349,26 @@ abstract final class AppTheme {
 
       // ─── Switch ───────────────────────────────────────────────────────
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return colorScheme.primary;
           }
           return colorScheme.onSurfaceVariant;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return colorScheme.primary.withOpacity(0.3);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorScheme.primary.withValues(alpha: 0.3);
           }
-          return colorScheme.surfaceVariant;
+          return colorScheme.surfaceContainerHighest;
         }),
       ),
 
       // ─── Slider ───────────────────────────────────────────────────────
       sliderTheme: SliderThemeData(
         activeTrackColor: colorScheme.primary,
-        inactiveTrackColor: colorScheme.surfaceVariant,
+        inactiveTrackColor: colorScheme.surfaceContainerHighest,
         thumbColor: colorScheme.primary,
-        overlayColor: colorScheme.primary.withOpacity(0.1),
+        overlayColor: colorScheme.primary.withValues(alpha: 0.1),
         valueIndicatorColor: colorScheme.primary,
         valueIndicatorTextStyle: textTheme.labelSmall?.copyWith(
           color: colorScheme.onPrimary,
@@ -382,8 +378,8 @@ abstract final class AppTheme {
       // ─── Progress Indicator ───────────────────────────────────────────
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: colorScheme.primary,
-        linearTrackColor: colorScheme.surfaceVariant,
-        circularTrackColor: colorScheme.surfaceVariant,
+        linearTrackColor: colorScheme.surfaceContainerHighest,
+        circularTrackColor: colorScheme.surfaceContainerHighest,
       ),
 
       // ─── FAB ──────────────────────────────────────────────────────────
@@ -410,7 +406,7 @@ abstract final class AppTheme {
       ),
 
       // ─── Tabs ─────────────────────────────────────────────────────────
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: colorScheme.primary,
         unselectedLabelColor: colorScheme.onSurfaceVariant,
         indicatorColor: colorScheme.primary,
@@ -428,7 +424,7 @@ abstract final class AppTheme {
         ),
         tileColor: Colors.transparent,
         iconColor: colorScheme.onSurfaceVariant,
-        textColor: colorScheme.onBackground,
+        textColor: colorScheme.onSurface,
         titleTextStyle: textTheme.bodyLarge?.copyWith(
           fontWeight: FontWeight.w500,
         ),
@@ -440,7 +436,7 @@ abstract final class AppTheme {
       // ─── Icon Button ──────────────────────────────────────────────────
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          foregroundColor: colorScheme.onBackground,
+          foregroundColor: colorScheme.onSurface,
           padding: const EdgeInsets.all(AppSpacing.sm),
         ),
       ),

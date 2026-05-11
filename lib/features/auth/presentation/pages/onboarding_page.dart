@@ -75,7 +75,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     final isLast = _currentPage == _pages.length - 1;
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -131,7 +131,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                           BorderRadius.circular(AppSpacing.buttonRadius),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.brand500.withOpacity(0.35),
+                          color: AppColors.brand500.withValues(alpha: 0.35),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -205,7 +205,7 @@ class _PageContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(36),
               boxShadow: [
                 BoxShadow(
-                  color: data.gradientColors[0].withOpacity(0.35),
+                  color: data.gradientColors[0].withValues(alpha: 0.35),
                   blurRadius: 32,
                   offset: const Offset(0, 12),
                 ),
@@ -228,7 +228,7 @@ class _PageContent extends StatelessWidget {
           Text(
             data.title,
             style: AppTypography.h2.copyWith(
-              color: scheme.onBackground,
+              color: scheme.onSurface,
             ),
             textAlign: TextAlign.center,
           )

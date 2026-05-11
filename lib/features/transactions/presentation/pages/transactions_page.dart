@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:financeiro/app/router/route_paths.dart';
 import 'package:financeiro/core/extensions/date_extensions.dart';
-import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
 import 'package:financeiro/features/transactions/providers/transaction_provider.dart';
@@ -71,7 +69,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage>
                     controller: _searchController,
                     autofocus: true,
                     style: AppTypography.bodyMedium.copyWith(
-                      color: scheme.onBackground,
+                      color: scheme.onSurface,
                     ),
                     decoration: InputDecoration(
                       hintText: 'Buscar transações...',
@@ -250,7 +248,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
             const SizedBox(height: AppSpacing.xl),
             Text(
               'Filtrar transações',
-              style: AppTypography.h5.copyWith(color: scheme.onBackground),
+              style: AppTypography.h5.copyWith(color: scheme.onSurface),
             ),
             const SizedBox(height: AppSpacing.xl),
             Text(

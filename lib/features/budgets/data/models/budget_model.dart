@@ -1,12 +1,6 @@
-import 'package:isar/isar.dart';
-import 'package:financeiro/features/transactions/domain/enums/transaction_enums.dart';
-
-part 'budget_model.g.dart';
-
-@collection
 class BudgetModel {
   BudgetModel({
-    required this.id,
+    this.id = 0,
     required this.name,
     required this.amount,
     required this.categoryId,
@@ -22,7 +16,7 @@ class BudgetModel {
     this.notes,
   });
 
-  Id id;
+  int id;
   String name;
   double amount;
   double spent;
@@ -38,7 +32,45 @@ class BudgetModel {
   DateTime createdAt;
 
   double get remaining => amount - spent;
-  double get progress => amount > 0 ? (spent / amount).clamp(0.0, 1.0) : 0.0;
+  double get progress =>
+      amount > 0 ? (spent / amount).clamp(0.0, 1.0) : 0.0;
   bool get isOverBudget => spent > amount;
   bool get isNearLimit => progress >= alertThreshold && !isOverBudget;
+
+  Map<String, dynamic> toMap() {
+    final map = <String, dynamic>{
+      'name': name,
+      'amount': amount,
+      'spent': spent,
+      'categoryId': categoryId,
+      'categoryName': categoryName,
+      'categoryIcon': categoryIcon,
+      'categoryColor': categoryColor,
+      'month': month,
+      'year': year,
+      'isActive': isActive ? 1 : 0,
+      'alertThreshold': alertThreshold,
+      'notes': notes,
+      'createdAt': createdAt.toIso8601String(),
+    };
+    if (id != 0) map['id'] = id;
+    return map;
+  }
+
+  factory BudgetModel.fromMap(Map<String, dynamic> m) => BudgetModel(
+        id: m['id'] as int,
+        name: m['name'] as String,
+        amount: (m['amount'] as num).toDouble(),
+        spent: (m['spent'] as num? ?? 0).toDouble(),
+        categoryId: m['categoryId'] as String,
+        categoryName: m['categoryName'] as String,
+        categoryIcon: m['categoryIcon'] as String,
+        categoryColor: m['categoryColor'] as int,
+        month: m['month'] as int,
+        year: m['year'] as int,
+        isActive: (m['isActive'] as int? ?? 1) == 1,
+        alertThreshold: (m['alertThreshold'] as num? ?? 0.75).toDouble(),
+        notes: m['notes'] as String?,
+        createdAt: DateTime.parse(m['createdAt'] as String),
+      );
 }

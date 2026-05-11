@@ -10,7 +10,6 @@ import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
 import 'package:financeiro/features/transactions/providers/transaction_provider.dart';
 import 'package:financeiro/features/transactions/domain/entities/transaction.dart';
-import 'package:financeiro/features/transactions/domain/enums/transaction_enums.dart';
 import 'package:financeiro/shared/widgets/glass_card.dart';
 
 class TransactionDetailPage extends ConsumerWidget {
@@ -39,7 +38,7 @@ class TransactionDetailPage extends ConsumerWidget {
     final prefix = tx.isIncome ? '+' : tx.isTransfer ? '' : '-';
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text('Detalhe'),
         actions: [
@@ -72,7 +71,7 @@ class TransactionDetailPage extends ConsumerWidget {
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
-                      color: amountColor.withOpacity(0.15),
+                      color: amountColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Icon(
@@ -96,7 +95,7 @@ class TransactionDetailPage extends ConsumerWidget {
                   Text(
                     tx.title,
                     style: AppTypography.h5.copyWith(
-                      color: scheme.onBackground,
+                      color: scheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -114,7 +113,7 @@ class TransactionDetailPage extends ConsumerWidget {
             // ─── Details Card ─────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.pageHPadding),
+                  horizontal: AppSpacing.pageHPadding,),
               child: AppCard(
                 child: Column(
                   children: [
@@ -185,7 +184,7 @@ class TransactionDetailPage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.pageHPadding),
+                    horizontal: AppSpacing.pageHPadding,),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -274,7 +273,7 @@ class _DetailRow extends StatelessWidget {
           Text(
             value,
             style: AppTypography.labelMedium.copyWith(
-              color: valueColor ?? scheme.onBackground,
+              color: valueColor ?? scheme.onSurface,
             ),
           ),
         ],

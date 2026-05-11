@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
 import 'package:financeiro/core/services/database_service.dart';
 import 'package:financeiro/features/investments/data/models/investment_model.dart';
 
@@ -9,12 +8,10 @@ class InvestmentsNotifier
     loadAll();
   }
 
-  Isar get _db => DatabaseService.instance;
-
   Future<void> loadAll() async {
     state = const AsyncValue.loading();
     try {
-      final models = await _db.investmentModels.where().findAll();
+      final models = await DatabaseService.getInvestments();
       state = AsyncValue.data(models);
     } catch (e, s) {
       state = AsyncValue.error(e, s);
@@ -22,17 +19,17 @@ class InvestmentsNotifier
   }
 
   Future<void> add(InvestmentModel model) async {
-    await _db.writeTxn(() => _db.investmentModels.put(model));
+    await DatabaseService.insertInvestment(model);
     await loadAll();
   }
 
   Future<void> update(InvestmentModel model) async {
-    await _db.writeTxn(() => _db.investmentModels.put(model));
+    await DatabaseService.updateInvestment(model);
     await loadAll();
   }
 
   Future<void> delete(int id) async {
-    await _db.writeTxn(() => _db.investmentModels.delete(id));
+    await DatabaseService.deleteInvestment(id);
     await loadAll();
   }
 }

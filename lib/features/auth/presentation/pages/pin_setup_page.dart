@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +31,11 @@ class _PinSetupPageState extends ConsumerState<PinSetupPage> {
         if (_pin.length < AppConstants.pinLength) {
           _pin += digit;
           if (_pin.length == AppConstants.pinLength) {
-            Future.delayed(const Duration(milliseconds: 200), () {
-              setState(() => _isConfirming = true);
-            });
+            unawaited(
+              Future.delayed(const Duration(milliseconds: 200), () {
+                setState(() => _isConfirming = true);
+              }),
+            );
           }
         }
       } else {
@@ -82,7 +85,7 @@ class _PinSetupPageState extends ConsumerState<PinSetupPage> {
     final current = _isConfirming ? _confirmPin : _pin;
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: Text(widget.isChange ? 'Alterar PIN' : 'Criar PIN'),
         leading: widget.isChange
@@ -121,7 +124,7 @@ class _PinSetupPageState extends ConsumerState<PinSetupPage> {
               const SizedBox(height: AppSpacing.xl2),
               Text(
                 _isConfirming ? 'Confirme seu PIN' : 'Crie seu PIN',
-                style: AppTypography.h4.copyWith(color: scheme.onBackground),
+                style: AppTypography.h4.copyWith(color: scheme.onSurface),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -153,7 +156,7 @@ class _PinSetupPageState extends ConsumerState<PinSetupPage> {
                       boxShadow: i < current.length
                           ? [
                               BoxShadow(
-                                color: scheme.primary.withOpacity(0.4),
+                                color: scheme.primary.withValues(alpha: 0.4),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),
@@ -217,7 +220,7 @@ class _PinUnlockPageState extends ConsumerState<PinUnlockPage> {
     final valid =
         await ref.read(authStateProvider.notifier).validatePin(_pin);
     if (!valid) {
-      HapticFeedback.heavyImpact();
+      unawaited(HapticFeedback.heavyImpact());
       setState(() {
         _pin = '';
         _isShaking = true;
@@ -233,7 +236,7 @@ class _PinUnlockPageState extends ConsumerState<PinUnlockPage> {
     final authState = ref.watch(authStateProvider);
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.pageInsets,
@@ -260,7 +263,7 @@ class _PinUnlockPageState extends ConsumerState<PinUnlockPage> {
               const SizedBox(height: AppSpacing.xl2),
               Text(
                 'Digite seu PIN',
-                style: AppTypography.h4.copyWith(color: scheme.onBackground),
+                style: AppTypography.h4.copyWith(color: scheme.onSurface),
               ),
               const SizedBox(height: AppSpacing.xl3),
               AnimatedContainer(
@@ -344,7 +347,7 @@ class _PinPad extends StatelessWidget {
                       : k == 'del'
                           ? onDelete
                           : () => onDigit(k),
-                )).toList(),
+                ),).toList(),
           ),
       ],
     );
@@ -391,7 +394,7 @@ class _PinKey extends StatelessWidget {
                 : Text(
                     label,
                     style: AppTypography.h3.copyWith(
-                      color: scheme.onBackground,
+                      color: scheme.onSurface,
                     ),
                   ),
           ),

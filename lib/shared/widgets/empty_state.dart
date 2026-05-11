@@ -37,7 +37,7 @@ class EmptyState extends StatelessWidget {
               height: 80,
               decoration: BoxDecoration(
                 color:
-                    (iconColor ?? scheme.primary).withOpacity(0.1),
+                    (iconColor ?? scheme.primary).withValues(alpha: 0.1),
                 borderRadius:
                     BorderRadius.circular(AppSpacing.cardRadius),
               ),
@@ -58,7 +58,7 @@ class EmptyState extends StatelessWidget {
             Text(
               title,
               style: AppTypography.h5.copyWith(
-                color: scheme.onBackground,
+                color: scheme.onSurface,
               ),
               textAlign: TextAlign.center,
             )
@@ -87,7 +87,7 @@ class EmptyState extends StatelessWidget {
                   .fadeIn()
                   .slideY(
                       begin: 0.3,
-                      duration: const Duration(milliseconds: 300)),
+                      duration: const Duration(milliseconds: 300),),
             ],
           ],
         ),

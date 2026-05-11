@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
 import 'package:financeiro/core/services/database_service.dart';
 import 'package:financeiro/features/cards/data/models/credit_card_model.dart';
 
@@ -9,16 +8,10 @@ class CardsNotifier
     loadAll();
   }
 
-  Isar get _db => DatabaseService.instance;
-
   Future<void> loadAll() async {
     state = const AsyncValue.loading();
     try {
-      final models = await _db.creditCardModels
-          .where()
-          .filter()
-          .isActiveEqualTo(true)
-          .findAll();
+      final models = await DatabaseService.getCreditCards();
       state = AsyncValue.data(models);
     } catch (e, s) {
       state = AsyncValue.error(e, s);
@@ -26,18 +19,18 @@ class CardsNotifier
   }
 
   Future<void> add(CreditCardModel model) async {
-    await _db.writeTxn(() => _db.creditCardModels.put(model));
+    await DatabaseService.insertCreditCard(model);
     await loadAll();
   }
 
   Future<void> update(CreditCardModel model) async {
     model.updatedAt = DateTime.now();
-    await _db.writeTxn(() => _db.creditCardModels.put(model));
+    await DatabaseService.updateCreditCard(model);
     await loadAll();
   }
 
   Future<void> delete(int id) async {
-    await _db.writeTxn(() => _db.creditCardModels.delete(id));
+    await DatabaseService.deleteCreditCard(id);
     await loadAll();
   }
 }

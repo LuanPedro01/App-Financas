@@ -162,14 +162,15 @@ class InvestmentsPage extends ConsumerWidget {
                                   Text(
                                     'Alocação',
                                     style: AppTypography.h6.copyWith(
-                                      color: scheme.onBackground,
+                                      color: scheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: AppSpacing.lg),
                                   SizedBox(
                                     height: 180,
                                     child: _AllocationChart(
-                                        investments: investments),
+                                      investments: investments,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -292,7 +293,7 @@ class _AllocationChart extends StatelessWidget {
                       child: Text(
                         entry.key.label,
                         style: AppTypography.caption.copyWith(
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -334,7 +335,7 @@ class _InvestmentTile extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -352,7 +353,7 @@ class _InvestmentTile extends StatelessWidget {
                 Text(
                   investment.ticker,
                   style: AppTypography.labelLarge.copyWith(
-                    color: scheme.onBackground,
+                    color: scheme.onSurface,
                   ),
                 ),
                 Text(
@@ -370,7 +371,7 @@ class _InvestmentTile extends StatelessWidget {
               Text(
                 investment.currentValue.brlCompact,
                 style: AppTypography.numericSmall.copyWith(
-                  color: scheme.onBackground,
+                  color: scheme.onSurface,
                 ),
               ),
               Row(

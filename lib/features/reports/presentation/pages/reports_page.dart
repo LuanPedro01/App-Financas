@@ -8,7 +8,7 @@ import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
 import 'package:financeiro/features/transactions/providers/transaction_provider.dart';
-import 'package:financeiro/features/transactions/domain/enums/transaction_enums.dart';
+import 'package:financeiro/features/transactions/domain/entities/transaction.dart';
 import 'package:financeiro/shared/widgets/glass_card.dart';
 
 class ReportsPage extends ConsumerStatefulWidget {
@@ -37,8 +37,6 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Relatórios'),
@@ -81,7 +79,7 @@ class _MonthlyReport extends ConsumerWidget {
     final monthTxs = allTxs
         .where((t) =>
             t.date.month == selectedMonth.month &&
-            t.date.year == selectedMonth.year)
+            t.date.year == selectedMonth.year,)
         .toList();
 
     final income = monthTxs
@@ -114,7 +112,7 @@ class _MonthlyReport extends ConsumerWidget {
                 Text(
                   selectedMonth.monthYear,
                   style: AppTypography.h6.copyWith(
-                    color: scheme.onBackground,
+                    color: scheme.onSurface,
                   ),
                 ),
                 IconButton(
@@ -130,23 +128,23 @@ class _MonthlyReport extends ConsumerWidget {
           // Summary Cards
           Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.pageHPadding),
+                horizontal: AppSpacing.pageHPadding,),
             child: Row(
               children: [
                 Expanded(
                   child: AppCard(
                     child: Column(
                       children: [
-                        Icon(Icons.arrow_downward_rounded,
-                            color: AppColors.income, size: 20),
+                        const Icon(Icons.arrow_downward_rounded,
+                            color: AppColors.income, size: 20,),
                         const SizedBox(height: 4),
                         Text('Receitas',
-                            style: AppTypography.caption
-                                .copyWith(color: scheme.onSurfaceVariant)),
+                            style: AppTypography.caption.copyWith(
+                                color: scheme.onSurfaceVariant,),),
                         const SizedBox(height: 4),
                         Text(income.brlCompact,
-                            style: AppTypography.numericSmall
-                                .copyWith(color: AppColors.income)),
+                            style: AppTypography.numericSmall.copyWith(
+                                color: AppColors.income,),),
                       ],
                     ),
                   ),
@@ -156,16 +154,16 @@ class _MonthlyReport extends ConsumerWidget {
                   child: AppCard(
                     child: Column(
                       children: [
-                        Icon(Icons.arrow_upward_rounded,
-                            color: AppColors.expense, size: 20),
+                        const Icon(Icons.arrow_upward_rounded,
+                            color: AppColors.expense, size: 20,),
                         const SizedBox(height: 4),
                         Text('Despesas',
-                            style: AppTypography.caption
-                                .copyWith(color: scheme.onSurfaceVariant)),
+                            style: AppTypography.caption.copyWith(
+                                color: scheme.onSurfaceVariant,),),
                         const SizedBox(height: 4),
                         Text(expense.brlCompact,
-                            style: AppTypography.numericSmall
-                                .copyWith(color: AppColors.expense)),
+                            style: AppTypography.numericSmall.copyWith(
+                                color: AppColors.expense,),),
                       ],
                     ),
                   ),
@@ -186,8 +184,8 @@ class _MonthlyReport extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text('Saldo',
-                            style: AppTypography.caption
-                                .copyWith(color: scheme.onSurfaceVariant)),
+                            style: AppTypography.caption.copyWith(
+                                color: scheme.onSurfaceVariant,),),
                         const SizedBox(height: 4),
                         Text(
                           balance.brlCompact,
@@ -210,7 +208,7 @@ class _MonthlyReport extends ConsumerWidget {
           // Trend Chart
           Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.pageHPadding),
+                horizontal: AppSpacing.pageHPadding,),
             child: AppCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +216,7 @@ class _MonthlyReport extends ConsumerWidget {
                   Text(
                     'Tendência — últimos 6 meses',
                     style: AppTypography.h6
-                        .copyWith(color: scheme.onBackground),
+                        .copyWith(color: scheme.onSurface),
                   ),
                   const SizedBox(height: AppSpacing.xl),
                   SizedBox(
@@ -229,7 +227,7 @@ class _MonthlyReport extends ConsumerWidget {
                           show: true,
                           drawVerticalLine: false,
                           getDrawingHorizontalLine: (_) => FlLine(
-                            color: scheme.outlineVariant.withOpacity(0.3),
+                            color: scheme.outlineVariant.withValues(alpha: 0.3),
                             strokeWidth: 1,
                             dashArray: [4, 4],
                           ),
@@ -273,7 +271,7 @@ class _MonthlyReport extends ConsumerWidget {
                                       t.isIncome &&
                                       t.isCompleted &&
                                       t.date.month == m.month &&
-                                      t.date.year == m.year)
+                                      t.date.year == m.year,)
                                   .fold(0.0, (s, t) => s + t.amount);
                               return FlSpot(e.key.toDouble(), v);
                             }).toList(),
@@ -283,7 +281,7 @@ class _MonthlyReport extends ConsumerWidget {
                             dotData: const FlDotData(show: false),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: AppColors.income.withOpacity(0.08),
+                              color: AppColors.income.withValues(alpha: 0.08),
                             ),
                           ),
                           // Expense line
@@ -295,7 +293,7 @@ class _MonthlyReport extends ConsumerWidget {
                                       t.isExpense &&
                                       t.isCompleted &&
                                       t.date.month == m.month &&
-                                      t.date.year == m.year)
+                                      t.date.year == m.year,)
                                   .fold(0.0, (s, t) => s + t.amount);
                               return FlSpot(e.key.toDouble(), v);
                             }).toList(),
@@ -305,7 +303,7 @@ class _MonthlyReport extends ConsumerWidget {
                             dotData: const FlDotData(show: false),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: AppColors.expense.withOpacity(0.08),
+                              color: AppColors.expense.withValues(alpha: 0.08),
                             ),
                           ),
                         ],
@@ -337,7 +335,7 @@ class _CategoryReport extends ConsumerWidget {
             t.isExpense &&
             t.isCompleted &&
             t.date.month == selectedMonth.month &&
-            t.date.year == selectedMonth.year)
+            t.date.year == selectedMonth.year,)
         .toList();
 
     final byCategory = <String, double>{};
@@ -403,13 +401,13 @@ class _CategoryReport extends ConsumerWidget {
                       child: Text(
                         entry.key,
                         style: AppTypography.labelMedium
-                            .copyWith(color: scheme.onBackground),
+                            .copyWith(color: scheme.onSurface),
                       ),
                     ),
                     Text(
                       entry.value.brl,
                       style: AppTypography.numericSmall
-                          .copyWith(color: scheme.onBackground),
+                          .copyWith(color: scheme.onSurface),
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
@@ -424,7 +422,7 @@ class _CategoryReport extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
                   child: LinearProgressIndicator(
                     value: pct,
-                    backgroundColor: color.withOpacity(0.12),
+                    backgroundColor: color.withValues(alpha: 0.12),
                     valueColor: AlwaysStoppedAnimation(color),
                     minHeight: 6,
                   ),

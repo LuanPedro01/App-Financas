@@ -113,7 +113,7 @@ class TransactionTile extends StatelessWidget {
                         child: Text(
                           t.title,
                           style: AppTypography.labelLarge.copyWith(
-                            color: scheme.onBackground,
+                            color: scheme.onSurface,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -173,7 +173,7 @@ class TransactionTile extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.warning500.withOpacity(0.15),
+                      color: AppColors.warning500.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -200,7 +200,7 @@ class TransactionTile extends StatelessWidget {
     required String label,
   }) {
     return Container(
-      color: color.withOpacity(0.15),
+      color: color.withValues(alpha: 0.15),
       alignment: alignment,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl2),
       child: Column(
@@ -238,7 +238,7 @@ class _CategoryIcon extends StatelessWidget {
       width: AppSpacing.avatarSize,
       height: AppSpacing.avatarSize,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppSpacing.cardSmallRadius),
       ),
       child: Center(
@@ -284,7 +284,7 @@ class _InstallmentBadge extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: AppColors.brand500.withOpacity(0.15),
+        color: AppColors.brand500.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

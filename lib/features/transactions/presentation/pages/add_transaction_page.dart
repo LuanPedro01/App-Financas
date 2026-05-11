@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:uuid/uuid.dart';
 import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
@@ -11,7 +11,6 @@ import 'package:financeiro/features/transactions/data/models/transaction_model.d
 import 'package:financeiro/features/transactions/providers/transaction_provider.dart';
 import 'package:financeiro/features/transactions/domain/enums/transaction_enums.dart';
 import 'package:financeiro/features/accounts/providers/accounts_provider.dart';
-import 'package:financeiro/features/cards/providers/cards_provider.dart';
 
 class AddTransactionPage extends ConsumerStatefulWidget {
   const AddTransactionPage({super.key, this.initialType, this.editId});
@@ -45,9 +44,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
   TransactionStatus _status = TransactionStatus.completed;
   PaymentMethod _paymentMethod = PaymentMethod.pix;
   RecurrenceType _recurrenceType = RecurrenceType.none;
-  bool _isInstallment = false;
-  int _installments = 1;
-  List<String> _tags = [];
+  final List<String> _tags = [];
   bool _isSubmitting = false;
 
   @override
@@ -85,7 +82,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     if (_amountController.text.isEmpty) return;
 
     setState(() => _isSubmitting = true);
-    HapticFeedback.mediumImpact();
+    unawaited(HapticFeedback.mediumImpact());
 
     try {
       final amount =
@@ -97,7 +94,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
 
       final now = DateTime.now();
       final model = TransactionModel(
-        id: Isar.autoIncrement,
+        id: 0,
         title: _titleController.text.trim(),
         amount: amount,
         type: _type,
@@ -125,7 +122,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
       await ref.read(transactionProvider.notifier).add(model);
 
       if (mounted) {
-        HapticFeedback.mediumImpact();
+        unawaited(HapticFeedback.mediumImpact());
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -155,7 +152,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: scheme.background,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: Text(
           widget.editId != null ? 'Editar transação' : 'Nova transação',
@@ -214,7 +211,7 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
               const SizedBox(height: AppSpacing.xl),
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.pageHPadding),
+                    horizontal: AppSpacing.pageHPadding,),
                 child: Column(
                   children: [
                     // Title
@@ -308,13 +305,13 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [_typeColor, _typeColor.withOpacity(0.8)],
+                            colors: [_typeColor, _typeColor.withValues(alpha: 0.8)],
                           ),
                           borderRadius:
                               BorderRadius.circular(AppSpacing.buttonRadius),
                           boxShadow: [
                             BoxShadow(
-                              color: _typeColor.withOpacity(0.35),
+                              color: _typeColor.withValues(alpha: 0.35),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -369,7 +366,7 @@ class _TypeSelector extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: scheme.surfaceVariant,
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppSpacing.cardSmallRadius),
       ),
       padding: const EdgeInsets.all(4),
@@ -389,10 +386,10 @@ class _TypeSelector extends StatelessWidget {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
+                  color: isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                   border: isSelected
-                      ? Border.all(color: color.withOpacity(0.4), width: 1)
+                      ? Border.all(color: color.withValues(alpha: 0.4), width: 1)
                       : null,
                 ),
                 child: Center(
@@ -510,10 +507,10 @@ class _DateField extends StatelessWidget {
       child: AbsorbPointer(
         child: TextFormField(
           readOnly: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Data',
-            prefixIcon: const Icon(Icons.calendar_today_rounded),
-            suffixIcon: const Icon(Icons.arrow_drop_down_rounded),
+            prefixIcon: Icon(Icons.calendar_today_rounded),
+            suffixIcon: Icon(Icons.arrow_drop_down_rounded),
           ),
           controller: TextEditingController(text: date.formatted),
         ),
@@ -540,7 +537,7 @@ class _AccountSelector extends ConsumerWidget {
     final accounts = accountsAsync.valueOrNull ?? [];
 
     return DropdownButtonFormField<String>(
-      value: selectedId,
+      initialValue: selectedId,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: const Icon(Icons.account_balance_wallet_rounded),
@@ -575,7 +572,7 @@ class _PaymentMethodSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<PaymentMethod>(
-      value: selected,
+      initialValue: selected,
       decoration: const InputDecoration(
         labelText: 'Forma de pagamento',
         prefixIcon: Icon(Icons.payment_rounded),
@@ -598,7 +595,7 @@ class _StatusSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<TransactionStatus>(
-      value: selected,
+      initialValue: selected,
       decoration: const InputDecoration(
         labelText: 'Status',
         prefixIcon: Icon(Icons.check_circle_outline_rounded),
@@ -621,7 +618,7 @@ class _RecurrenceSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<RecurrenceType>(
-      value: selected,
+      initialValue: selected,
       decoration: const InputDecoration(
         labelText: 'Recorrência',
         prefixIcon: Icon(Icons.repeat_rounded),

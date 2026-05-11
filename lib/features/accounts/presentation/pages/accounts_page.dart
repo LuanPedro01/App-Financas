@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:financeiro/app/router/route_paths.dart';
-import 'package:financeiro/core/extensions/number_extensions.dart';
 import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
@@ -164,7 +163,7 @@ class _AccountTile extends ConsumerWidget {
               width: AppSpacing.avatarSize,
               height: AppSpacing.avatarSize,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(AppSpacing.cardSmallRadius),
               ),
               child: Icon(
@@ -181,7 +180,7 @@ class _AccountTile extends ConsumerWidget {
                   Text(
                     account.name,
                     style: AppTypography.labelLarge.copyWith(
-                      color: scheme.onBackground,
+                      color: scheme.onSurface,
                     ),
                   ),
                   if (account.bankName != null) ...[

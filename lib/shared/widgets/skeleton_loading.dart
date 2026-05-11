@@ -48,8 +48,8 @@ class TransactionSkeleton extends StatelessWidget {
     return Column(
       children: List.generate(
         count,
-        (i) => Padding(
-          padding: const EdgeInsets.symmetric(
+        (i) => const Padding(
+          padding: EdgeInsets.symmetric(
             horizontal: AppSpacing.pageHPadding,
             vertical: AppSpacing.sm,
           ),
@@ -60,7 +60,7 @@ class TransactionSkeleton extends StatelessWidget {
                 height: AppSpacing.avatarSize,
                 borderRadius: AppSpacing.avatarSize / 2,
               ),
-              const SizedBox(width: AppSpacing.md),
+              SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +70,7 @@ class TransactionSkeleton extends StatelessWidget {
                       height: 14,
                       borderRadius: 7,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    SizedBox(height: AppSpacing.xs),
                     SkeletonBox(
                       width: 80,
                       height: 11,
@@ -79,7 +79,7 @@ class TransactionSkeleton extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              SizedBox(width: AppSpacing.md),
               SkeletonBox(
                 width: 70,
                 height: 16,
@@ -98,18 +98,18 @@ class DashboardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return const SingleChildScrollView(
       padding: AppSpacing.pageInsets,
       child: Column(
         children: [
-          const SizedBox(height: AppSpacing.xl2),
+          SizedBox(height: AppSpacing.xl2),
           // Balance card skeleton
           SkeletonBox(
             width: double.infinity,
             height: 160,
             borderRadius: AppSpacing.cardRadius,
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: AppSpacing.lg),
           // Stats row
           Row(
             children: [
@@ -120,7 +120,7 @@ class DashboardSkeleton extends StatelessWidget {
                   borderRadius: AppSpacing.cardRadius,
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              SizedBox(width: AppSpacing.md),
               Expanded(
                 child: SkeletonBox(
                   width: double.infinity,
@@ -130,16 +130,16 @@ class DashboardSkeleton extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: AppSpacing.lg),
           // Chart skeleton
           SkeletonBox(
             width: double.infinity,
             height: 220,
             borderRadius: AppSpacing.cardRadius,
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(height: AppSpacing.lg),
           // Transactions list skeleton
-          const TransactionSkeleton(count: 4),
+          TransactionSkeleton(count: 4),
         ],
       ),
     );
@@ -156,8 +156,8 @@ class CardSkeleton extends StatelessWidget {
     return Column(
       children: List.generate(
         count,
-        (i) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        (i) => const Padding(
+          padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
           child: SkeletonBox(
             width: double.infinity,
             height: 120,

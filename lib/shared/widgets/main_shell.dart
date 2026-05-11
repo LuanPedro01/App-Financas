@@ -79,7 +79,6 @@ class _MainShellState extends ConsumerState<MainShell> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
       body: widget.child,
@@ -89,12 +88,12 @@ class _MainShellState extends ConsumerState<MainShell> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Container(
+      bottomNavigationBar: DecoratedBox(
         decoration: BoxDecoration(
           color: scheme.surface,
           border: Border(
             top: BorderSide(
-              color: scheme.outlineVariant.withOpacity(0.5),
+              color: scheme.outlineVariant.withValues(alpha: 0.5),
               width: 1,
             ),
           ),
@@ -140,7 +139,7 @@ class _AddFab extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brand500.withOpacity(0.4),
+            color: AppColors.brand500.withValues(alpha: 0.4),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),

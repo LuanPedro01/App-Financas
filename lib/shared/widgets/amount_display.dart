@@ -88,7 +88,7 @@ class BalanceTile extends StatelessWidget {
         AmountDisplay(
           amount: amount,
           style: AppTypography.numericMedium.copyWith(
-            color: color ?? scheme.onBackground,
+            color: color ?? scheme.onSurface,
           ),
           color: color,
           compact: true,

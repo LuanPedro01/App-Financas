@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:financeiro/core/extensions/number_extensions.dart';
+import 'package:financeiro/core/extensions/date_extensions.dart';
 import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
 import 'package:financeiro/features/transactions/providers/transaction_provider.dart';
-import 'package:financeiro/features/transactions/domain/enums/transaction_enums.dart';
+import 'package:financeiro/features/transactions/domain/entities/transaction.dart';
 import 'package:financeiro/shared/widgets/glass_card.dart';
 
 class AnalyticsPage extends ConsumerWidget {
@@ -19,7 +20,7 @@ class AnalyticsPage extends ConsumerWidget {
 
     // Monthly averages
     final now = DateTime.now();
-    final months = List.generate(6, (i) => DateTime(now.year, now.month - (5 - i)));
+    final months = List.generate(6, (i) => DateTime(now.year, now.month - (5 - i)),);
 
     final monthlyExpenses = months.map((m) {
       return allTxs
@@ -27,7 +28,7 @@ class AnalyticsPage extends ConsumerWidget {
               t.isExpense &&
               t.isCompleted &&
               t.date.month == m.month &&
-              t.date.year == m.year)
+              t.date.year == m.year,)
           .fold(0.0, (s, t) => s + t.amount);
     }).toList();
 
@@ -106,7 +107,7 @@ class AnalyticsPage extends ConsumerWidget {
                         Text(
                           'Gastos por dia da semana',
                           style: AppTypography.h6.copyWith(
-                            color: scheme.onBackground,
+                            color: scheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xl),
@@ -141,8 +142,8 @@ class AnalyticsPage extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     color: isMax
                                         ? AppColors.expense
-                                        : AppColors.expense.withOpacity(
-                                            value > 0 ? 0.4 : 0.1),
+                                        : AppColors.expense.withValues(
+                                            alpha: value > 0 ? 0.4 : 0.1,),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                 ),
@@ -171,7 +172,7 @@ class AnalyticsPage extends ConsumerWidget {
                         Text(
                           'Evolução patrimonial',
                           style: AppTypography.h6.copyWith(
-                            color: scheme.onBackground,
+                            color: scheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xl),
@@ -187,14 +188,14 @@ class AnalyticsPage extends ConsumerWidget {
                                         t.isIncome &&
                                         t.isCompleted &&
                                         t.date.month == m.month &&
-                                        t.date.year == m.year)
+                                        t.date.year == m.year,)
                                     .fold(0.0, (s, t) => s + t.amount);
                                 final expense = allTxs
                                     .where((t) =>
                                         t.isExpense &&
                                         t.isCompleted &&
                                         t.date.month == m.month &&
-                                        t.date.year == m.year)
+                                        t.date.year == m.year,)
                                     .fold(0.0, (s, t) => s + t.amount);
                                 final net = income - expense;
 
@@ -232,11 +233,11 @@ class AnalyticsPage extends ConsumerWidget {
                                   ),
                                 ),
                                 leftTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false)),
+                                    sideTitles: SideTitles(showTitles: false),),
                                 topTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false)),
+                                    sideTitles: SideTitles(showTitles: false),),
                                 rightTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false)),
+                                    sideTitles: SideTitles(showTitles: false),),
                               ),
                               gridData: const FlGridData(show: false),
                               borderData: FlBorderData(show: false),

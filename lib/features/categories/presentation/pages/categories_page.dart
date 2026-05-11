@@ -23,10 +23,8 @@ class CategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final expense = _defaultCategories.where((c) => c.type == 'expense').toList();
     final income = _defaultCategories.where((c) => c.type == 'income').toList();
-    final both = _defaultCategories.where((c) => c.type == 'both').toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -109,7 +107,7 @@ class _SectionHeader extends StatelessWidget {
               vertical: 2,
             ),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
             ),
             child: Text(
@@ -143,7 +141,7 @@ class _CategoryGridItem extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: category.color.withOpacity(0.15),
+              color: category.color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(category.icon, color: category.color, size: 22),

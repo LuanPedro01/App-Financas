@@ -46,7 +46,7 @@ class BudgetsPage extends ConsumerWidget {
                     Text(
                       'Nenhum orçamento',
                       style: AppTypography.h5.copyWith(
-                        color: scheme.onBackground,
+                        color: scheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -116,7 +116,7 @@ class _BudgetCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(Icons.category_rounded, color: color, size: 20),
@@ -126,7 +126,7 @@ class _BudgetCard extends StatelessWidget {
                   child: Text(
                     budget.categoryName,
                     style: AppTypography.labelLarge.copyWith(
-                      color: scheme.onBackground,
+                      color: scheme.onSurface,
                     ),
                   ),
                 ),
@@ -154,7 +154,7 @@ class _BudgetCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: progressColor.withOpacity(0.12),
+                backgroundColor: progressColor.withValues(alpha: 0.12),
                 valueColor: AlwaysStoppedAnimation(progressColor),
                 minHeight: 8,
               ),

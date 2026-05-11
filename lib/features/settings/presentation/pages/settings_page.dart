@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:financeiro/app/router/route_paths.dart';
 import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
+import 'package:financeiro/core/theme/app_theme.dart';
 import 'package:financeiro/features/settings/providers/settings_provider.dart';
 import 'package:financeiro/features/auth/providers/auth_provider.dart';
 import 'package:financeiro/shared/widgets/glass_card.dart';
@@ -35,7 +35,7 @@ class SettingsPage extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
                       child: Text(
                         settings.userName.isNotEmpty
                             ? settings.userName[0].toUpperCase()
@@ -72,7 +72,7 @@ class SettingsPage extends ConsumerWidget {
               ).animate().fadeIn(),
             ),
 
-            _SectionLabel(label: 'Aparência'),
+            const _SectionLabel(label: 'Aparência'),
             _SettingsTile(
               icon: Icons.palette_outlined,
               iconColor: AppColors.accent500,
@@ -97,7 +97,7 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
 
-            _SectionLabel(label: 'Segurança'),
+            const _SectionLabel(label: 'Segurança'),
             _SettingsTile(
               icon: Icons.security_rounded,
               iconColor: AppColors.success500,
@@ -107,7 +107,7 @@ class SettingsPage extends ConsumerWidget {
               onTap: () => context.push(RoutePaths.settingsSecurity),
             ),
 
-            _SectionLabel(label: 'Dados'),
+            const _SectionLabel(label: 'Dados'),
             _SettingsTile(
               icon: Icons.category_outlined,
               iconColor: AppColors.warning500,
@@ -125,7 +125,7 @@ class SettingsPage extends ConsumerWidget {
               onTap: () => context.push(RoutePaths.settingsBackup),
             ),
 
-            _SectionLabel(label: 'Notificações'),
+            const _SectionLabel(label: 'Notificações'),
             _SettingsTile(
               icon: Icons.notifications_outlined,
               iconColor: AppColors.accent500,
@@ -139,14 +139,14 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
 
-            _SectionLabel(label: 'Sobre'),
-            _SettingsTile(
+            const _SectionLabel(label: 'Sobre'),
+            const _SettingsTile(
               icon: Icons.info_outline_rounded,
               iconColor: AppColors.dark300,
               title: 'Versão do app',
               subtitle: '1.0.0',
             ),
-            _SettingsTile(
+            const _SettingsTile(
               icon: Icons.code_rounded,
               iconColor: AppColors.dark300,
               title: 'Desenvolvido com Flutter',
@@ -157,12 +157,12 @@ class SettingsPage extends ConsumerWidget {
 
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.pageHPadding),
+                  horizontal: AppSpacing.pageHPadding,),
               child: Center(
                 child: Text(
                   'Financeiro v1.0.0 • Dados 100% locais',
                   style: AppTypography.caption.copyWith(
-                    color: scheme.onSurfaceVariant.withOpacity(0.5),
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -225,7 +225,7 @@ class _SettingsTile extends StatelessWidget {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.12),
+          color: iconColor.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 18),
@@ -233,7 +233,7 @@ class _SettingsTile extends StatelessWidget {
       title: Text(
         title,
         style: AppTypography.bodyMedium.copyWith(
-          color: scheme.onBackground,
+          color: scheme.onSurface,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -257,7 +257,6 @@ class SettingsSecurityPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
-    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Segurança')),
@@ -354,7 +353,7 @@ class SettingsThemePage extends ConsumerWidget {
                   AppThemeMode.light => 'Claro',
                 },
                 style: AppTypography.bodyMedium.copyWith(
-                  color: scheme.onBackground,
+                  color: scheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
               ),

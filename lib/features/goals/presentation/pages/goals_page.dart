@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:financeiro/app/router/route_paths.dart';
 import 'package:financeiro/core/extensions/number_extensions.dart';
-import 'package:financeiro/core/theme/app_colors.dart';
 import 'package:financeiro/core/theme/app_spacing.dart';
 import 'package:financeiro/core/theme/app_typography.dart';
 import 'package:financeiro/features/goals/providers/goals_provider.dart';
@@ -80,7 +78,7 @@ class _GoalCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(
@@ -95,7 +93,7 @@ class _GoalCard extends StatelessWidget {
                       Text(
                         goal.name,
                         style: AppTypography.labelLarge.copyWith(
-                          color: scheme.onBackground,
+                          color: scheme.onSurface,
                         ),
                       ),
                       Text(
@@ -131,7 +129,7 @@ class _GoalCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: color.withOpacity(0.12),
+                    backgroundColor: color.withValues(alpha: 0.12),
                     valueColor: AlwaysStoppedAnimation(color),
                     minHeight: 10,
                   ),
